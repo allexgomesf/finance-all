@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCurrentProfile } from "@/lib/data/session";
 import type { Tables } from "@/lib/database.types";
 
 /** Projeto com cliente / vendedor / responsável já resolvidos. */
@@ -25,10 +26,15 @@ const PROJETO_SELECT = `
 
 export async function getProjetos(): Promise<ProjetoListItem[]> {
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("projetos")
-    .select(PROJETO_SELECT)
-    .order("created_at", { ascending: false });
+  const profile = await getCurrentProfile();
+
+  let query = supabase.from("projetos").select(PROJETO_SELECT);
+
+  if (profile?.cargo === "Vendedor") {
+    query = query.eq("vendedor_id", profile.id);
+  }
+
+  const { data } = await query.order("created_at", { ascending: false });
   return (data ?? []) as unknown as ProjetoListItem[];
 }
 
