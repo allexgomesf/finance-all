@@ -11,16 +11,24 @@ import {
   type ClienteFormState,
 } from "@/lib/actions/clientes";
 import type { Cliente } from "@/lib/data/clientes";
+import {
+  formatCPF,
+  formatCNPJ,
+  formatPhone,
+  formatCEP,
+  onlyDigits,
+} from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { buttonVariants } from "@/components/ui/button";
-import { NativeSelect } from "@/components/ui/native-select";
 import { Field, FieldGrid } from "@/components/shared/form-field";
 import { SubmitButton } from "@/components/shared/submit-button";
+import { VendedorCombobox } from "@/components/clientes/vendedor-combobox";
 import { cn } from "@/lib/utils";
 
 type Mode = "create" | "edit" | "view";
 type Option = { id: string; nome: string };
+type CurrentProfile = { id: string; nome_completo: string | null; cargo: string | null } | null;
 
 const inputClass = "h-11";
 
@@ -59,21 +67,63 @@ export function ClienteForm({
   mode,
   cliente,
   vendedores,
+  currentProfile,
 }: {
   mode: Mode;
   cliente?: Cliente;
   vendedores: Option[];
+  currentProfile?: CurrentProfile;
 }) {
   const readOnly = mode === "view";
+  const isVendedor = currentProfile?.cargo === "Vendedor";
+
   const [isEmpresa, setIsEmpresa] = useState(cliente?.is_empresa ?? false);
   const [state, formAction] = useActionState<ClienteFormState, FormData>(
     mode === "create" ? createCliente : updateCliente,
     {},
   );
 
+  // Masked field states
+  const [cpf, setCpf] = useState(() => formatCPF(cliente?.cpf ?? "").replace("—", ""));
+  const [cnpj, setCnpj] = useState(() => formatCNPJ(cliente?.cnpj ?? "").replace("—", ""));
+  const [telefone, setTelefone] = useState(() => formatPhone(cliente?.telefone ?? "").replace("—", ""));
+  const [cep, setCep] = useState(() => formatCEP(cliente?.cep ?? ""));
+
+  // Address fields (auto-filled from ViaCEP)
+  const [logradouro, setLogradouro] = useState(cliente?.logradouro ?? "");
+  const [bairro, setBairro] = useState(cliente?.bairro ?? "");
+  const [cidade, setCidade] = useState(cliente?.cidade ?? "");
+  const [estado, setEstado] = useState(cliente?.estado ?? "");
+
   useEffect(() => {
     if (state.error) toast.error(state.error);
   }, [state]);
+
+  async function handleCepChange(value: string) {
+    const masked = formatCEP(value);
+    setCep(masked);
+    const digits = onlyDigits(masked);
+    if (digits.length === 8) {
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+        if (res.ok) {
+          const data = await res.json();
+          if (!data.erro) {
+            setLogradouro(data.logradouro ?? "");
+            setBairro(data.bairro ?? "");
+            setCidade(data.localidade ?? "");
+            setEstado(data.uf ?? "");
+          }
+        }
+      } catch {
+        // ViaCEP indisponível — usuário preenche manualmente
+      }
+    }
+  }
+
+  // Resolve vendor name for view mode
+  const vendedorNome =
+    vendedores.find((v) => v.id === cliente?.vendedor_id)?.nome ?? "Sem vendedor";
 
   return (
     <form action={readOnly ? undefined : formAction} className="space-y-5">
@@ -143,7 +193,8 @@ export function ClienteForm({
                 <Input
                   id="cpf"
                   name="cpf"
-                  defaultValue={cliente?.cpf ?? ""}
+                  value={cpf}
+                  onChange={(e) => setCpf(formatCPF(e.target.value).replace("—", ""))}
                   placeholder="000.000.000-00"
                   className={inputClass}
                   disabled={readOnly || isEmpresa}
@@ -226,7 +277,8 @@ export function ClienteForm({
                 <Input
                   id="cnpj"
                   name="cnpj"
-                  defaultValue={cliente?.cnpj ?? ""}
+                  value={cnpj}
+                  onChange={(e) => setCnpj(formatCNPJ(e.target.value).replace("—", ""))}
                   placeholder="00.000.000/0000-00"
                   className={inputClass}
                   disabled={readOnly || !isEmpresa}
@@ -284,7 +336,8 @@ export function ClienteForm({
             <Input
               id="telefone"
               name="telefone"
-              defaultValue={cliente?.telefone ?? ""}
+              value={telefone}
+              onChange={(e) => setTelefone(formatPhone(e.target.value).replace("—", ""))}
               placeholder="(00) 00000-0000"
               className={inputClass}
               disabled={readOnly}
@@ -299,7 +352,8 @@ export function ClienteForm({
             <Input
               id="cep"
               name="cep"
-              defaultValue={cliente?.cep ?? ""}
+              value={cep}
+              onChange={(e) => handleCepChange(e.target.value)}
               placeholder="00000-000"
               className={inputClass}
               disabled={readOnly}
@@ -313,7 +367,8 @@ export function ClienteForm({
             <Input
               id="logradouro"
               name="logradouro"
-              defaultValue={cliente?.logradouro ?? ""}
+              value={logradouro}
+              onChange={(e) => setLogradouro(e.target.value)}
               placeholder="Rua / Avenida"
               className={inputClass}
               disabled={readOnly}
@@ -343,7 +398,8 @@ export function ClienteForm({
             <Input
               id="bairro"
               name="bairro"
-              defaultValue={cliente?.bairro ?? ""}
+              value={bairro}
+              onChange={(e) => setBairro(e.target.value)}
               placeholder="Bairro"
               className={inputClass}
               disabled={readOnly}
@@ -353,7 +409,8 @@ export function ClienteForm({
             <Input
               id="cidade"
               name="cidade"
-              defaultValue={cliente?.cidade ?? ""}
+              value={cidade}
+              onChange={(e) => setCidade(e.target.value)}
               placeholder="Cidade"
               className={inputClass}
               disabled={readOnly}
@@ -363,7 +420,8 @@ export function ClienteForm({
             <Input
               id="estado"
               name="estado"
-              defaultValue={cliente?.estado ?? ""}
+              value={estado}
+              onChange={(e) => setEstado(e.target.value)}
               placeholder="UF"
               className={inputClass}
               disabled={readOnly}
@@ -374,19 +432,29 @@ export function ClienteForm({
 
       <Section title="Atendimento">
         <Field label="Vendedor responsável" htmlFor="vendedor_id">
-          <NativeSelect
-            id="vendedor_id"
-            name="vendedor_id"
-            defaultValue={cliente?.vendedor_id ?? ""}
-            disabled={readOnly}
-          >
-            <option value="">Sem vendedor</option>
-            {vendedores.map((vendedor) => (
-              <option key={vendedor.id} value={vendedor.id}>
-                {vendedor.nome}
-              </option>
-            ))}
-          </NativeSelect>
+          {readOnly ? (
+            <Input
+              id="vendedor_id"
+              value={vendedorNome}
+              className={inputClass}
+              disabled
+            />
+          ) : isVendedor ? (
+            <>
+              <input type="hidden" name="vendedor_id" value={currentProfile!.id} />
+              <Input
+                id="vendedor_id"
+                value={currentProfile!.nome_completo ?? ""}
+                className={inputClass}
+                disabled
+              />
+            </>
+          ) : (
+            <VendedorCombobox
+              vendedores={vendedores}
+              defaultValue={cliente?.vendedor_id ?? ""}
+            />
+          )}
         </Field>
       </Section>
 

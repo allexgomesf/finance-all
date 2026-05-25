@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { updatePerfil } from "@/lib/actions/perfil";
 import type { Tables } from "@/lib/database.types";
+import { formatPhone } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Field, FieldGrid } from "@/components/shared/form-field";
@@ -18,6 +19,9 @@ export function PerfilForm({
   email: string;
 }) {
   const [state, formAction] = useActionState(updatePerfil, {});
+  const [telefone, setTelefone] = useState(() =>
+    formatPhone(profile?.telefone ?? "").replace("—", ""),
+  );
 
   useEffect(() => {
     if (state.ok) toast.success("Perfil atualizado com sucesso.");
@@ -48,7 +52,10 @@ export function PerfilForm({
             <Input
               id="telefone"
               name="telefone"
-              defaultValue={profile?.telefone ?? ""}
+              value={telefone}
+              onChange={(e) =>
+                setTelefone(formatPhone(e.target.value).replace("—", ""))
+              }
               placeholder="(00) 00000-0000"
               className="h-11"
             />

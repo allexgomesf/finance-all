@@ -65,6 +65,12 @@ export function formatPhone(value: string | null | undefined): string {
   return d.replace(/^(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").replace(/-$/, "");
 }
 
+export function formatCEP(value: string | null | undefined): string {
+  const d = onlyDigits(value).slice(0, 8);
+  if (!d) return "";
+  return d.replace(/^(\d{5})(\d{0,3})/, "$1-$2").replace(/-$/, "");
+}
+
 /** Iniciais para avatares (até duas letras). */
 export function initials(name: string | null | undefined): string {
   const parts = (name ?? "").trim().split(/\s+/).filter(Boolean);

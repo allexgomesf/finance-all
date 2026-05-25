@@ -11,15 +11,18 @@ import {
   type ProjetoFormState,
 } from "@/lib/actions/projetos";
 import type { ProjetoListItem } from "@/lib/data/projetos";
+import { ESTAGIOS_PROJETO } from "@/components/projetos/estagio-selector";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { buttonVariants } from "@/components/ui/button";
 import { NativeSelect } from "@/components/ui/native-select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Field, FieldGrid } from "@/components/shared/form-field";
 import { SubmitButton } from "@/components/shared/submit-button";
 
 type Mode = "create" | "edit" | "view";
 type Option = { id: string; nome: string };
+type CurrentProfile = { id: string; nome_completo: string | null; cargo: string | null } | null;
 
 const inputClass = "h-11";
 const STATUS = ["Pendente", "Pré-aprovado", "Reprovado"] as const;
@@ -52,18 +55,28 @@ function Section({
   );
 }
 
+function LockedInput({ value }: { value: string }) {
+  return (
+    <Input value={value} className={inputClass} disabled readOnly />
+  );
+}
+
 export function ProjetoForm({
   mode,
   projeto,
   clientes,
   profiles,
+  currentProfile,
 }: {
   mode: Mode;
   projeto?: ProjetoListItem;
   clientes: Option[];
   profiles: Option[];
+  currentProfile?: CurrentProfile;
 }) {
   const readOnly = mode === "view";
+  const isVendedor = currentProfile?.cargo === "Vendedor";
+
   const [state, formAction] = useActionState<ProjetoFormState, FormData>(
     mode === "create" ? createProjeto : updateProjeto,
     {},
@@ -72,6 +85,14 @@ export function ProjetoForm({
   useEffect(() => {
     if (state.error) toast.error(state.error);
   }, [state]);
+
+  // Resolve display names for view mode
+  const clienteNome =
+    clientes.find((c) => c.id === projeto?.cliente_id)?.nome ?? "—";
+  const vendedorNome =
+    profiles.find((p) => p.id === projeto?.vendedor_id)?.nome ?? "Sem vendedor";
+  const responsavelNome =
+    profiles.find((p) => p.id === projeto?.responsavel_id)?.nome ?? "Sem responsável";
 
   return (
     <form action={readOnly ? undefined : formAction} className="space-y-5">
@@ -97,71 +118,91 @@ export function ProjetoForm({
         description="Cliente, equipe e estágio no funil."
       >
         <FieldGrid columns={2}>
+          {/* Cliente */}
           <Field
             label="Cliente"
             htmlFor="cliente_id"
             required={!readOnly}
             className="sm:col-span-2"
           >
-            <NativeSelect
-              id="cliente_id"
-              name="cliente_id"
-              defaultValue={projeto?.cliente_id ?? ""}
-              disabled={readOnly}
-              required={!readOnly}
-            >
-              <option value="">Selecione o cliente</option>
-              {clientes.map((cliente) => (
-                <option key={cliente.id} value={cliente.id}>
-                  {cliente.nome}
-                </option>
-              ))}
-            </NativeSelect>
+            {readOnly ? (
+              <LockedInput value={clienteNome} />
+            ) : (
+              <SearchableSelect
+                name="cliente_id"
+                options={clientes}
+                defaultValue={projeto?.cliente_id ?? ""}
+                required
+                placeholder="Selecione o cliente"
+                emptyLabel=""
+                searchPlaceholder="Pesquisar cliente…"
+              />
+            )}
           </Field>
+
+          {/* Vendedor */}
           <Field label="Vendedor" htmlFor="vendedor_id">
-            <NativeSelect
-              id="vendedor_id"
-              name="vendedor_id"
-              defaultValue={projeto?.vendedor_id ?? ""}
-              disabled={readOnly}
-            >
-              <option value="">Sem vendedor</option>
-              {profiles.map((profile) => (
-                <option key={profile.id} value={profile.id}>
-                  {profile.nome}
-                </option>
-              ))}
-            </NativeSelect>
+            {readOnly ? (
+              <LockedInput value={vendedorNome} />
+            ) : isVendedor ? (
+              <>
+                <input type="hidden" name="vendedor_id" value={currentProfile!.id} />
+                <LockedInput value={currentProfile!.nome_completo ?? ""} />
+              </>
+            ) : (
+              <SearchableSelect
+                name="vendedor_id"
+                options={profiles}
+                defaultValue={projeto?.vendedor_id ?? ""}
+                emptyLabel="Sem vendedor"
+                placeholder="Selecione o vendedor…"
+                searchPlaceholder="Pesquisar vendedor…"
+              />
+            )}
           </Field>
+
+          {/* Responsável */}
           <Field label="Responsável" htmlFor="responsavel_id">
-            <NativeSelect
-              id="responsavel_id"
-              name="responsavel_id"
-              defaultValue={projeto?.responsavel_id ?? ""}
-              disabled={readOnly}
-            >
-              <option value="">Sem responsável</option>
-              {profiles.map((profile) => (
-                <option key={profile.id} value={profile.id}>
-                  {profile.nome}
-                </option>
-              ))}
-            </NativeSelect>
+            {readOnly ? (
+              <LockedInput value={responsavelNome} />
+            ) : isVendedor ? (
+              <>
+                <input type="hidden" name="responsavel_id" value={currentProfile!.id} />
+                <LockedInput value={currentProfile!.nome_completo ?? ""} />
+              </>
+            ) : (
+              <SearchableSelect
+                name="responsavel_id"
+                options={profiles}
+                defaultValue={projeto?.responsavel_id ?? ""}
+                emptyLabel="Sem responsável"
+                placeholder="Selecione o responsável…"
+                searchPlaceholder="Pesquisar responsável…"
+              />
+            )}
           </Field>
+
+          {/* Estágio */}
           <Field
             label="Estágio"
             htmlFor="estagio_projeto"
-            hint="Ex.: Consultas, Orçamento, Pré-análise de crédito."
           >
-            <Input
+            <NativeSelect
               id="estagio_projeto"
               name="estagio_projeto"
               defaultValue={projeto?.estagio_projeto ?? ""}
-              placeholder="Estágio do projeto"
-              className={inputClass}
               disabled={readOnly}
-            />
+            >
+              <option value="">Selecione o estágio</option>
+              {ESTAGIOS_PROJETO.map((estagio) => (
+                <option key={estagio} value={estagio}>
+                  {estagio}
+                </option>
+              ))}
+            </NativeSelect>
           </Field>
+
+          {/* Status */}
           <Field label="Status" htmlFor="status_projeto">
             <NativeSelect
               id="status_projeto"

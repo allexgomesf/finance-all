@@ -9,6 +9,7 @@ import { ObservacoesSection } from "@/components/projetos/observacoes-section";
 import { getProjetoById, getObservacoesByProjetoId, getSignedAnexoUrls } from "@/lib/data/projetos";
 import { getClienteOptions } from "@/lib/data/clientes";
 import { getProfileOptions } from "@/lib/data/profiles";
+import { getCurrentProfile } from "@/lib/data/session";
 import { projetoClienteNome } from "@/lib/display";
 
 export const metadata: Metadata = { title: "Projeto" };
@@ -19,11 +20,12 @@ export default async function ProjetoViewPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [projeto, clientes, profiles, observacoes] = await Promise.all([
+  const [projeto, clientes, profiles, observacoes, currentProfile] = await Promise.all([
     getProjetoById(id),
     getClienteOptions(),
     getProfileOptions(),
     getObservacoesByProjetoId(id),
+    getCurrentProfile(),
   ]);
   if (!projeto) notFound();
 
@@ -42,6 +44,7 @@ export default async function ProjetoViewPage({
           projeto={projeto}
           clientes={clientes}
           profiles={profiles}
+          currentProfile={currentProfile}
         />
         <AnexosSection projetoId={projeto.id} signedUrls={signedAnexos} />
         <ObservacoesSection projetoId={projeto.id} observacoes={observacoes} />

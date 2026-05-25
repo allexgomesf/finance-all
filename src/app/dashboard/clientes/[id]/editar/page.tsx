@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ClienteForm } from "@/components/clientes/cliente-form";
 import { getClienteById } from "@/lib/data/clientes";
 import { getProfileOptions } from "@/lib/data/profiles";
+import { getCurrentProfile } from "@/lib/data/session";
 
 export const metadata: Metadata = { title: "Editar cliente" };
 
@@ -14,9 +15,10 @@ export default async function EditarClientePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [cliente, vendedores] = await Promise.all([
+  const [cliente, vendedores, currentProfile] = await Promise.all([
     getClienteById(id),
     getProfileOptions(),
+    getCurrentProfile(),
   ]);
   if (!cliente) notFound();
 
@@ -27,7 +29,7 @@ export default async function EditarClientePage({
         subtitle="Atualize os dados do cliente"
       />
       <div className="mx-auto max-w-3xl">
-        <ClienteForm mode="edit" cliente={cliente} vendedores={vendedores} />
+        <ClienteForm mode="edit" cliente={cliente} vendedores={vendedores} currentProfile={currentProfile} />
       </div>
     </>
   );

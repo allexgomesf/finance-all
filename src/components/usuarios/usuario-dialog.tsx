@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -21,6 +21,7 @@ import { Field } from "@/components/shared/form-field";
 import { SubmitButton } from "@/components/shared/submit-button";
 import { createUsuario, updateUsuario } from "@/lib/actions/usuarios";
 import type { ProfileWithEmail } from "@/lib/data/profiles";
+import { formatPhone } from "@/lib/format";
 
 type Mode = "create" | "edit" | "view";
 
@@ -49,7 +50,18 @@ export function UsuarioDialog({
   trigger: React.ReactElement;
 }) {
   const [open, setOpen] = useState(false);
+  const [telefone, setTelefone] = useState(() =>
+    formatPhone(usuario?.telefone ?? "").replace("—", ""),
+  );
   const router = useRouter();
+
+  const handleOpenChange = useCallback(
+    (next: boolean) => {
+      setOpen(next);
+      if (next) setTelefone(formatPhone(usuario?.telefone ?? "").replace("—", ""));
+    },
+    [usuario?.telefone],
+  );
 
   const readOnly = mode === "view";
   const copy = COPY[mode];
@@ -71,7 +83,7 @@ export function UsuarioDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={trigger} />
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -134,7 +146,10 @@ export function UsuarioDialog({
               <Input
                 id="usuario-telefone"
                 name="telefone"
-                defaultValue={usuario?.telefone ?? ""}
+                value={telefone}
+                onChange={(e) =>
+                  setTelefone(formatPhone(e.target.value).replace("—", ""))
+                }
                 placeholder="(00) 00000-0000"
                 className="h-11"
                 disabled={readOnly}

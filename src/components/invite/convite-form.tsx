@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -16,11 +16,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { registerWithInvite, type InviteState } from "@/lib/actions/invite";
+import { formatPhone } from "@/lib/format";
 
 const initialState: InviteState = {};
 
 export function ConviteForm({ token }: { token: string }) {
   const [state, formAction] = useActionState(registerWithInvite, initialState);
+  const [telefone, setTelefone] = useState("");
 
   if (state.ok) {
     return (
@@ -64,6 +66,10 @@ export function ConviteForm({ token }: { token: string }) {
             <Input
               id="convite-telefone"
               name="telefone"
+              value={telefone}
+              onChange={(e) =>
+                setTelefone(formatPhone(e.target.value).replace("—", ""))
+              }
               placeholder="(00) 00000-0000"
               autoComplete="tel"
             />
