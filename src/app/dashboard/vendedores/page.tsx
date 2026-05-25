@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { VendedoresTable } from "@/components/vendedores/vendedores-table";
 import { getVendedores } from "@/lib/data/profiles";
 import { getCurrentProfile } from "@/lib/data/session";
+import { getPageTexts } from "@/lib/data/page-texts";
 
 export const metadata: Metadata = { title: "Vendedores" };
 
@@ -14,13 +15,14 @@ export default async function VendedoresPage() {
     redirect("/dashboard");
   }
 
-  const vendedores = await getVendedores();
+  const [vendedores, pageTexts] = await Promise.all([getVendedores(), getPageTexts()]);
+  const t = pageTexts["vendedores"];
 
   return (
     <>
       <PageHeader
-        title="Vendedores"
-        subtitle="Equipe de vendas da sua empresa"
+        title={t?.title ?? "Vendedores"}
+        subtitle={t?.subtitle ?? "Equipe de vendas da sua empresa"}
       />
       <VendedoresTable vendedores={vendedores} />
     </>

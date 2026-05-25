@@ -5,7 +5,11 @@ import { NextResponse, type NextRequest } from "next/server";
 const PUBLIC_PATHS = ["/", "/login", "/forgot-password"];
 
 function isPublicPath(pathname: string) {
-  return PUBLIC_PATHS.includes(pathname) || pathname.startsWith("/auth");
+  return (
+    PUBLIC_PATHS.includes(pathname) ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/convite")
+  );
 }
 
 /**

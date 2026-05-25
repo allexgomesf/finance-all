@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { UsuariosTable } from "@/components/usuarios/usuarios-table";
 import { getUsuarios } from "@/lib/data/profiles";
 import { getCurrentProfile } from "@/lib/data/session";
+import { getPageTexts } from "@/lib/data/page-texts";
 
 export const metadata: Metadata = { title: "Usuários" };
 
@@ -14,13 +15,14 @@ export default async function UsuariosPage() {
     redirect("/dashboard");
   }
 
-  const usuarios = await getUsuarios();
+  const [usuarios, pageTexts] = await Promise.all([getUsuarios(), getPageTexts()]);
+  const t = pageTexts["usuarios"];
 
   return (
     <>
       <PageHeader
-        title="Usuários"
-        subtitle="Gerencie os usuários cadastrados na sua empresa"
+        title={t?.title ?? "Usuários"}
+        subtitle={t?.subtitle ?? "Gerencie os usuários cadastrados na sua empresa"}
       />
       <UsuariosTable usuarios={usuarios} />
     </>

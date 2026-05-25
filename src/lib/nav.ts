@@ -7,6 +7,7 @@ import {
   UserCogIcon,
   UserPenIcon,
   KeyRoundIcon,
+  TypeIcon,
   type LucideIcon,
 } from "lucide-react";
 
@@ -30,6 +31,7 @@ export const primaryNav: NavItem[] = [
   { label: "Projetos", href: "/dashboard/projetos", icon: PresentationIcon },
   { label: "Vendedores", href: "/dashboard/vendedores", icon: BriefcaseIcon, roles: ["Admin", "Gerente"] },
   { label: "Usuários", href: "/dashboard/usuarios", icon: UserCogIcon, roles: ["Admin"] },
+  { label: "Textos do App", href: "/dashboard/configuracoes/textos", icon: TypeIcon, roles: ["Admin"] },
 ];
 
 /** Itens de conta — rodapé da sidebar. */

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AuthForm } from "@/components/auth-form";
+import { getLoginPageText } from "@/lib/data/page-texts";
 
 export const metadata: Metadata = {
   title: "Entrar",
@@ -28,7 +29,11 @@ export default function LoginPage() {
   );
 }
 
-function LoginArtPanel() {
+async function LoginArtPanel() {
+  const loginText = await getLoginPageText();
+  const tagline = loginText.title ?? "Suas finanças, sob controle.";
+  const taglineSubtitle =
+    loginText.subtitle ?? "Gerencie projetos, clientes e receitas em um só lugar.";
   const chartPath =
     "M 0,188 C 40,182 68,172 90,168 S 140,154 165,146 S 202,128 228,120 " +
     "S 268,104 294,97 S 328,82 353,74 S 388,59 413,51 " +
@@ -244,14 +249,13 @@ function LoginArtPanel() {
           className="text-[1.75rem] font-semibold leading-snug tracking-tight"
           style={{ color: "#fff" }}
         >
-          Suas finanças,{" "}
-          <span style={{ color: "#ee328e" }}>sob controle.</span>
+          {tagline}
         </p>
         <p
           className="mt-2.5 text-sm leading-relaxed"
           style={{ color: "rgba(255,255,255,0.42)" }}
         >
-          Gerencie projetos, clientes e receitas em um só lugar.
+          {taglineSubtitle}
         </p>
       </div>
     </div>

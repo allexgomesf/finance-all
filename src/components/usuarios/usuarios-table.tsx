@@ -2,6 +2,8 @@
 
 import { PencilIcon, PlusIcon, Trash2Icon, UserCogIcon } from "lucide-react";
 
+import { InviteLinkButton } from "@/components/invite/invite-link-button";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -41,6 +43,13 @@ export function UsuariosTable({ usuarios }: { usuarios: ProfileWithEmail[] }) {
     />
   );
 
+  const toolbar = (
+    <div className="flex items-center gap-2">
+      <InviteLinkButton />
+      {addButton}
+    </div>
+  );
+
   return (
     <DataList
       items={usuarios}
@@ -51,7 +60,7 @@ export function UsuariosTable({ usuarios }: { usuarios: ProfileWithEmail[] }) {
           u.cargo ?? ""
         }`
       }
-      toolbar={addButton}
+      toolbar={toolbar}
       emptyState={
         <EmptyState
           icon={UserCogIcon}

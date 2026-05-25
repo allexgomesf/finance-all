@@ -9,16 +9,18 @@ import {
 import { PageHeader } from "@/components/layout/page-header";
 import { StatCard } from "@/components/shared/stat-card";
 import { getDashboardCounts } from "@/lib/data/dashboard";
+import { getPageTexts } from "@/lib/data/page-texts";
 import { formatCurrency } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Início" };
 
 export default async function DashboardHomePage() {
-  const counts = await getDashboardCounts();
+  const [counts, pageTexts] = await Promise.all([getDashboardCounts(), getPageTexts()]);
+  const t = pageTexts["inicio"];
 
   return (
     <>
-      <PageHeader title="Início" subtitle="Dados gerais" />
+      <PageHeader title={t?.title ?? "Início"} subtitle={t?.subtitle ?? "Dados gerais"} />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
