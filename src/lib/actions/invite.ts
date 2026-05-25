@@ -105,6 +105,7 @@ export async function registerWithInvite(
       empresa_id: (tokenData as { empresa_id: string }).empresa_id,
       nome_completo: nome,
       telefone,
+      cargo: "Vendedor",
     })
     .eq("id", userData.user.id);
 

@@ -39,16 +39,18 @@ export default async function DashboardHomePage() {
           href="/dashboard/projetos"
           hint="Total cadastrado"
         />
+        {!counts.isVendedor && (
+          <StatCard
+            index={2}
+            label="Vendedores"
+            value={counts.vendedores}
+            icon={BriefcaseIcon}
+            href="/dashboard/vendedores"
+            hint="Equipe de vendas"
+          />
+        )}
         <StatCard
-          index={2}
-          label="Vendedores"
-          value={counts.vendedores}
-          icon={BriefcaseIcon}
-          href="/dashboard/vendedores"
-          hint="Equipe de vendas"
-        />
-        <StatCard
-          index={3}
+          index={counts.isVendedor ? 2 : 3}
           label="Valor previsto"
           value={formatCurrency(counts.valorPrevisto)}
           icon={TrendingUpIcon}

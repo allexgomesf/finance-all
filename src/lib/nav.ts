@@ -26,7 +26,7 @@ export type NavItem = {
 /** Navegação principal — espelha a sidebar dos mockups. */
 export const primaryNav: NavItem[] = [
   { label: "Início", href: "/dashboard", icon: HomeIcon, exact: true },
-  { label: "Empresa", href: "/dashboard/empresa", icon: Building2Icon },
+  { label: "Empresa", href: "/dashboard/empresa", icon: Building2Icon, roles: ["Admin"] },
   { label: "Clientes", href: "/dashboard/clientes", icon: UsersIcon },
   { label: "Projetos", href: "/dashboard/projetos", icon: PresentationIcon },
   { label: "Vendedores", href: "/dashboard/vendedores", icon: BriefcaseIcon, roles: ["Admin", "Gerente"] },
