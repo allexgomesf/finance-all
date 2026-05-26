@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "node scripts/patch-next-headers.mjs"
+    "postinstall": "node scripts/patch-next-headers.mjs",
+    "sync:bubble": "node scripts/sync-bubble-to-supabase.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
