@@ -284,6 +284,17 @@ export function ClienteForm({
                   disabled={readOnly || !isEmpresa}
                 />
               </Field>
+              <Field label="CPF do responsável" htmlFor="cpf_pj">
+                <Input
+                  id="cpf_pj"
+                  name="cpf"
+                  value={cpf}
+                  onChange={(e) => setCpf(formatCPF(e.target.value).replace("—", ""))}
+                  placeholder="000.000.000-00"
+                  className={inputClass}
+                  disabled={readOnly || !isEmpresa}
+                />
+              </Field>
               <Field
                 label="Data de abertura"
                 htmlFor="data_abertura_empresa"
