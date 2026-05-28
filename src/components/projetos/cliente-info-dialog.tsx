@@ -51,7 +51,7 @@ export function ClienteInfoDialog({
         render={
           <button
             type="button"
-            className="flex h-11 w-full items-center gap-2 rounded-md border border-input bg-muted/50 px-3 text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-11 w-full cursor-pointer items-center gap-2 rounded-md border border-input bg-muted/50 px-3 text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
           />
         }
       >
