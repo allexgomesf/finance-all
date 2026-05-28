@@ -14,6 +14,18 @@ export type ProjetoListItem = Tables<"projetos"> & {
     telefone: string | null;
     cpf: string | null;
     cnpj: string | null;
+    rg: string | null;
+    orgao_expedidor: string | null;
+    nome_mae: string | null;
+    data_nascimento: string | null;
+    data_abertura_empresa: string | null;
+    renda_mensal: number | null;
+    faturamento_empresa: number | null;
+    cep: string | null;
+    logradouro: string | null;
+    numero_end: string | null;
+    complemento: string | null;
+    bairro: string | null;
     cidade: string | null;
     estado: string | null;
     is_empresa: boolean | null;
@@ -30,7 +42,7 @@ export type AnexoSigned = { path: string; url: string; name: string };
 
 const PROJETO_SELECT = `
   *,
-  cliente:clientes!projetos_cliente_id_fkey(id, nome, razao_social, email, telefone, cpf, cnpj, cidade, estado, is_empresa),
+  cliente:clientes!projetos_cliente_id_fkey(id, nome, razao_social, email, telefone, cpf, cnpj, rg, orgao_expedidor, nome_mae, data_nascimento, data_abertura_empresa, renda_mensal, faturamento_empresa, cep, logradouro, numero_end, complemento, bairro, cidade, estado, is_empresa),
   vendedor:profiles!projetos_vendedor_id_fkey(id, nome_completo),
   responsavel:profiles!projetos_responsavel_id_fkey(id, nome_completo)
 `;
