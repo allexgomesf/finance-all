@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeftIcon, CircleAlertIcon, PencilIcon } from "lucide-react";
+import { ClienteInfoDialog } from "@/components/projetos/cliente-info-dialog";
 import { toast } from "sonner";
 
 import {
@@ -126,7 +127,14 @@ export function ProjetoForm({
             className="sm:col-span-2"
           >
             {readOnly ? (
-              <LockedInput value={clienteNome} />
+              projeto?.cliente ? (
+                <ClienteInfoDialog
+                  cliente={projeto.cliente}
+                  displayName={clienteNome}
+                />
+              ) : (
+                <LockedInput value={clienteNome} />
+              )
             ) : (
               <SearchableSelect
                 name="cliente_id"

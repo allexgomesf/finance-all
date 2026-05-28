@@ -6,7 +6,18 @@ import type { Tables } from "@/lib/database.types";
 
 /** Projeto com cliente / vendedor / responsável já resolvidos. */
 export type ProjetoListItem = Tables<"projetos"> & {
-  cliente: { id: string; nome: string | null; razao_social: string | null; email: string | null } | null;
+  cliente: {
+    id: string;
+    nome: string | null;
+    razao_social: string | null;
+    email: string | null;
+    telefone: string | null;
+    cpf: string | null;
+    cnpj: string | null;
+    cidade: string | null;
+    estado: string | null;
+    is_empresa: boolean | null;
+  } | null;
   vendedor: { id: string; nome_completo: string | null } | null;
   responsavel: { id: string; nome_completo: string | null } | null;
 };
@@ -19,7 +30,7 @@ export type AnexoSigned = { path: string; url: string; name: string };
 
 const PROJETO_SELECT = `
   *,
-  cliente:clientes!projetos_cliente_id_fkey(id, nome, razao_social, email),
+  cliente:clientes!projetos_cliente_id_fkey(id, nome, razao_social, email, telefone, cpf, cnpj, cidade, estado, is_empresa),
   vendedor:profiles!projetos_vendedor_id_fkey(id, nome_completo),
   responsavel:profiles!projetos_responsavel_id_fkey(id, nome_completo)
 `;
