@@ -40,9 +40,6 @@ export function ClienteInfoDialog({
   cliente: ClienteInfo;
   displayName: string;
 }) {
-  const documento = cliente.is_empresa ? cliente.cnpj : cliente.cpf;
-  const documentoLabel = cliente.is_empresa ? "CNPJ" : "CPF";
-
   const localidade = [cliente.cidade, cliente.estado].filter(Boolean).join(" / ");
 
   return (
@@ -73,7 +70,8 @@ export function ClienteInfoDialog({
           )}
           <InfoRow label="E-mail" value={cliente.email} />
           <InfoRow label="Telefone" value={cliente.telefone} />
-          {documento && <InfoRow label={documentoLabel} value={documento} />}
+          {cliente.is_empresa && <InfoRow label="CNPJ" value={cliente.cnpj} />}
+          <InfoRow label="CPF" value={cliente.cpf} />
           {localidade && <InfoRow label="Cidade / Estado" value={localidade} />}
         </div>
       </DialogContent>
