@@ -33,7 +33,7 @@ export default async function ConvitePage({
           <CardHeader>
             <CardTitle className="text-2xl">Link inválido</CardTitle>
             <CardDescription>
-              Este link de convite é inválido, já foi utilizado ou expirou.
+              Este link de convite é inválido ou já foi utilizado.
               Solicite um novo link ao administrador.
             </CardDescription>
           </CardHeader>
@@ -54,13 +54,11 @@ export default async function ConvitePage({
 async function validateToken(token: string): Promise<boolean> {
   if (!token) return false;
   const admin = createAdminClient();
-  const now = new Date().toISOString();
   const { data } = await admin
     .from("invite_tokens")
     .select("id")
     .eq("token", token)
     .is("used_at", null)
-    .gt("expires_at", now)
     .maybeSingle();
   return !!data;
 }

@@ -21,14 +21,16 @@ export type EstagioProjeto = (typeof ESTAGIOS_PROJETO)[number];
 export function EstagioSelector({
   projetoId,
   estagioAtual,
+  readOnly = false,
 }: {
   projetoId: string;
   estagioAtual: string | null;
+  readOnly?: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
 
   function handleSelect(estagio: string) {
-    if (estagio === estagioAtual || isPending) return;
+    if (estagio === estagioAtual || isPending || readOnly) return;
     startTransition(async () => {
       const result = await updateEstagioAction(projetoId, estagio);
       if (result.error) {
@@ -47,15 +49,16 @@ export function EstagioSelector({
           <button
             key={estagio}
             type="button"
-            disabled={isPending}
+            disabled={isPending || readOnly}
             onClick={() => handleSelect(estagio)}
             className={cn(
-              "cursor-pointer rounded-xl border px-3 py-4 text-center text-sm font-medium transition-colors",
+              "rounded-xl border px-3 py-4 text-center text-sm font-medium transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               isActive
                 ? "border-primary bg-primary text-primary-foreground shadow-sm"
                 : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-primary/5",
-              isPending && "cursor-not-allowed opacity-60",
+              readOnly ? "cursor-default" : "cursor-pointer",
+              (isPending || readOnly) && "opacity-60",
             )}
           >
             {estagio}

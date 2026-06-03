@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentEmpresaId } from "@/lib/data/session";
 import { getDigits, getStr, getText } from "@/lib/form-utils";
@@ -75,8 +74,14 @@ export async function updateUsuario(
   const id = getStr(formData, "id");
   if (!id) return { error: "Usuário inválido." };
 
-  const supabase = await createClient();
-  const { error } = await supabase
+  let admin;
+  try {
+    admin = createAdminClient();
+  } catch {
+    return { error: "Service key do Supabase não configurada." };
+  }
+
+  const { error } = await admin
     .from("profiles")
     .update({
       nome_completo: getText(formData, "nome_completo"),

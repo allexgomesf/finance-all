@@ -42,7 +42,6 @@ export async function generateInviteLink(): Promise<
     .insert({
       empresa_id: empresaId,
       created_by: user.id,
-      expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
     })
     .select("token")
     .single();
@@ -62,14 +61,12 @@ export async function registerWithInvite(
   if (!token) return { error: "Token de convite ausente." };
 
   const admin = createAdminClient();
-  const now = new Date().toISOString();
 
   const { data: tokenData, error: tokenError } = await admin
     .from("invite_tokens")
     .select("*")
     .eq("token", token)
     .is("used_at", null)
-    .gt("expires_at", now)
     .maybeSingle();
 
   if (tokenError || !tokenData) {

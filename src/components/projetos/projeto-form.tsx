@@ -191,40 +191,51 @@ export function ProjetoForm({
           </Field>
 
           {/* Estágio */}
-          <Field
-            label="Estágio"
-            htmlFor="estagio_projeto"
-          >
-            <NativeSelect
-              id="estagio_projeto"
-              name="estagio_projeto"
-              defaultValue={projeto?.estagio_projeto ?? ""}
-              disabled={readOnly}
-            >
-              <option value="">Selecione o estágio</option>
-              {ESTAGIOS_PROJETO.map((estagio) => (
-                <option key={estagio} value={estagio}>
-                  {estagio}
-                </option>
-              ))}
-            </NativeSelect>
+          <Field label="Estágio" htmlFor="estagio_projeto">
+            {isVendedor && !readOnly ? (
+              <>
+                <input type="hidden" name="estagio_projeto" value={projeto?.estagio_projeto ?? ""} />
+                <LockedInput value={projeto?.estagio_projeto ?? "Nenhum"} />
+              </>
+            ) : (
+              <NativeSelect
+                id="estagio_projeto"
+                name="estagio_projeto"
+                defaultValue={projeto?.estagio_projeto ?? ""}
+                disabled={readOnly}
+              >
+                <option value="">Selecione o estágio</option>
+                {ESTAGIOS_PROJETO.map((estagio) => (
+                  <option key={estagio} value={estagio}>
+                    {estagio}
+                  </option>
+                ))}
+              </NativeSelect>
+            )}
           </Field>
 
           {/* Status */}
           <Field label="Status" htmlFor="status_projeto">
-            <NativeSelect
-              id="status_projeto"
-              name="status_projeto"
-              defaultValue={projeto?.status_projeto ?? ""}
-              disabled={readOnly}
-            >
-              <option value="">Sem status</option>
-              {STATUS.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </NativeSelect>
+            {isVendedor && !readOnly ? (
+              <>
+                <input type="hidden" name="status_projeto" value={projeto?.status_projeto ?? ""} />
+                <LockedInput value={projeto?.status_projeto ?? "Sem status"} />
+              </>
+            ) : (
+              <NativeSelect
+                id="status_projeto"
+                name="status_projeto"
+                defaultValue={projeto?.status_projeto ?? ""}
+                disabled={readOnly}
+              >
+                <option value="">Sem status</option>
+                {STATUS.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </NativeSelect>
+            )}
           </Field>
         </FieldGrid>
       </Section>

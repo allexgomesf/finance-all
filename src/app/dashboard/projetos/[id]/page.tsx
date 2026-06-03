@@ -38,7 +38,11 @@ export default async function ProjetoViewPage({
         subtitle="Detalhes do projeto"
       />
       <div className="mx-auto max-w-5xl space-y-5">
-        <EstagioSelector projetoId={projeto.id} estagioAtual={projeto.estagio_projeto} />
+        <EstagioSelector
+          projetoId={projeto.id}
+          estagioAtual={projeto.estagio_projeto}
+          readOnly={currentProfile?.cargo === "Vendedor"}
+        />
         <ProjetoForm
           mode="view"
           projeto={projeto}
