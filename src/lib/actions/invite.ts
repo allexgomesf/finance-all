@@ -42,6 +42,7 @@ export async function generateInviteLink(): Promise<
     .insert({
       empresa_id: empresaId,
       created_by: user.id,
+      expires_at: "2099-12-31T23:59:59.000Z",
     })
     .select("token")
     .single();

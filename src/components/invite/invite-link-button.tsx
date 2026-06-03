@@ -18,7 +18,7 @@ export function InviteLinkButton() {
     if ("url" in result) {
       try {
         await navigator.clipboard.writeText(result.url);
-        toast.success("Link copiado! Expira em 30 minutos.");
+        toast.success("Link de convite copiado!");
       } catch {
         toast.info(`Link gerado: ${result.url}`);
       }
