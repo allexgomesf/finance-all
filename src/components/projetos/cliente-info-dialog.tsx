@@ -23,6 +23,9 @@ type ClienteInfo = {
   nome_mae: string | null;
   data_nascimento: string | null;
   data_abertura_empresa: string | null;
+  socio_nome: string | null;
+  socio_data_nascimento: string | null;
+  socio_nome_mae: string | null;
   renda_mensal: number | null;
   faturamento_empresa: number | null;
   cep: string | null;
@@ -144,6 +147,20 @@ export function ClienteInfoDialog({
               <InfoRow label="CPF do responsável" value={formatCPF(cliente.cpf)} />
               <InfoRow label="Data de abertura" value={formatDate(cliente.data_abertura_empresa)} />
               <InfoRow label="Faturamento mensal" value={formatCurrency(cliente.faturamento_empresa)} />
+
+              {(cliente.socio_nome ||
+                cliente.socio_data_nascimento ||
+                cliente.socio_nome_mae) && (
+                <>
+                  <SectionTitle>Sócio</SectionTitle>
+                  <InfoRow label="Nome do sócio" value={cliente.socio_nome} />
+                  <InfoRow
+                    label="Data de nascimento"
+                    value={formatDate(cliente.socio_data_nascimento)}
+                  />
+                  <InfoRow label="Nome da mãe" value={cliente.socio_nome_mae} />
+                </>
+              )}
             </>
           ) : (
             <>
