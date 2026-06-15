@@ -325,6 +325,49 @@ export function ClienteForm({
                   disabled={readOnly || !isEmpresa}
                 />
               </Field>
+
+              <div className="sm:col-span-2 mt-1">
+                <h3 className="font-heading text-sm font-semibold text-foreground">
+                  Sócio
+                </h3>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Dados do sócio responsável pela empresa.
+                </p>
+              </div>
+              <Field
+                label="Nome do sócio"
+                htmlFor="socio_nome"
+                className="sm:col-span-2"
+              >
+                <Input
+                  id="socio_nome"
+                  name="socio_nome"
+                  defaultValue={cliente?.socio_nome ?? ""}
+                  placeholder="Nome completo do sócio"
+                  className={inputClass}
+                  disabled={readOnly || !isEmpresa}
+                />
+              </Field>
+              <Field label="Data de nascimento" htmlFor="socio_data_nascimento">
+                <Input
+                  id="socio_data_nascimento"
+                  name="socio_data_nascimento"
+                  type="date"
+                  defaultValue={dateValue(cliente?.socio_data_nascimento)}
+                  className={inputClass}
+                  disabled={readOnly || !isEmpresa}
+                />
+              </Field>
+              <Field label="Nome da mãe" htmlFor="socio_nome_mae">
+                <Input
+                  id="socio_nome_mae"
+                  name="socio_nome_mae"
+                  defaultValue={cliente?.socio_nome_mae ?? ""}
+                  placeholder="Nome da mãe do sócio"
+                  className={inputClass}
+                  disabled={readOnly || !isEmpresa}
+                />
+              </Field>
             </FieldGrid>
           </div>
         </div>

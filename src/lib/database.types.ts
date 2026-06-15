@@ -42,6 +42,9 @@ export type Database = {
           razao_social: string | null
           renda_mensal: number | null
           rg: string | null
+          socio_data_nascimento: string | null
+          socio_nome: string | null
+          socio_nome_mae: string | null
           telefone: string | null
           updated_at: string | null
           vendedor_id: string | null
@@ -73,6 +76,9 @@ export type Database = {
           razao_social?: string | null
           renda_mensal?: number | null
           rg?: string | null
+          socio_data_nascimento?: string | null
+          socio_nome?: string | null
+          socio_nome_mae?: string | null
           telefone?: string | null
           updated_at?: string | null
           vendedor_id?: string | null
@@ -104,6 +110,9 @@ export type Database = {
           razao_social?: string | null
           renda_mensal?: number | null
           rg?: string | null
+          socio_data_nascimento?: string | null
+          socio_nome?: string | null
+          socio_nome_mae?: string | null
           telefone?: string | null
           updated_at?: string | null
           vendedor_id?: string | null
