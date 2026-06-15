@@ -37,15 +37,31 @@ export async function getClienteOptions(): Promise<
   const supabase = await createClient();
   const profile = await getCurrentProfile();
 
-  let query = supabase.from("clientes").select("id, nome, razao_social, is_empresa");
+  // O PostgREST limita cada resposta a 1000 linhas por padrão, então
+  // paginamos com .range() para garantir que TODOS os clientes apareçam
+  // (admins não têm filtro de vendedor e facilmente ultrapassam esse teto).
+  const PAGE_SIZE = 1000;
+  const rows: Pick<Cliente, "id" | "nome" | "razao_social" | "is_empresa">[] = [];
 
-  if (profile?.cargo === "Vendedor") {
-    query = query.eq("vendedor_id", profile.id);
+  for (let from = 0; ; from += PAGE_SIZE) {
+    let query = supabase
+      .from("clientes")
+      .select("id, nome, razao_social, is_empresa")
+      .order("id", { ascending: true })
+      .range(from, from + PAGE_SIZE - 1);
+
+    if (profile?.cargo === "Vendedor") {
+      query = query.eq("vendedor_id", profile.id);
+    }
+
+    const { data } = await query;
+    if (!data || data.length === 0) break;
+    rows.push(...data);
+    if (data.length < PAGE_SIZE) break;
   }
 
-  const { data } = await query;
-  return (data ?? [])
-    .map((cliente: Pick<Cliente, "id" | "nome" | "razao_social" | "is_empresa">) => ({
+  return rows
+    .map((cliente) => ({
       id: cliente.id,
       nome: clienteNome(cliente),
     }))
